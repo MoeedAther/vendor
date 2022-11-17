@@ -602,7 +602,7 @@ function Tables() {
   useEffect(()=>{ // useEffect lifecycle method runs after final render is completed in DOM
     async function getAllStudents(){
       try {
-        const response = await axios.get("https://express-backend123.herokuapp.com/api/products")
+        const response = await axios.get("https://uvm-server.herokuapp.com/api/products")
         // const response = await axios.get("http://localhost:3001/api/products")
         console.log(response)
         setProducts(response.data.products) // Withdraws objects from responce array and stores them in users state
