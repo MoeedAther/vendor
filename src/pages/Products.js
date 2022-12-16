@@ -596,14 +596,12 @@ import pencil from "../assets/images/pencil.svg";
 // ];
 
 function Tables() {
-  // const onChange = (e) => console.log(`radio checked:${e.target.value}`);
   const [products,setProducts]=useState([])
 
   useEffect(()=>{ // useEffect lifecycle method runs after final render is completed in DOM
-    async function getAllStudents(){
+    async function getAllProducts(){
       try {
-        const response = await axios.get("https://uvm-server.herokuapp.com/api/products")
-        // const response = await axios.get("http://localhost:3001/api/products")
+        const response = await axios.get("http://localhost:3001/api/products")
         console.log(response)
         setProducts(response.data.products) // Withdraws objects from responce array and stores them in users state
         console.log()
@@ -611,7 +609,7 @@ function Tables() {
         console.log(error)
       }
     }
-    getAllStudents()
+    getAllProducts()
   },[])
   
 

@@ -25,6 +25,7 @@ import {
 
 import { ToTopOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 // Images
 import ava1 from "../assets/images/logo-shopify.svg";
@@ -602,19 +603,27 @@ const dataproject = [
 
 function Tables() {
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
-  const [productbarcode,setBarcode]=useState()
-  const [products,setProducts]=useState([])
+  const [productbarcode, setBarcode] = useState()
+  const [items, setItems] = useState([])
+  const [total, setTotal] = useState(0)
+  const [firstbarcode, setFirstBarcode]=useState()
+  const [secondbarcode, setSecondBarcode]=useState()
+  const vender_email = useSelector((state) => state.userdata.email)
 
-  const inputs={
-    productbarcode:productbarcode
+
+  const inputs = {
+    productbarcode: productbarcode
   }
 
-  const responceobj={
-    barcode:data.pbarcode
+  const transactionInfo={
+    transaction:items,
+    userbarcode:firstbarcode+secondbarcode,
+    total:total,
+    vender_email:vender_email
   }
 
-
-  const getProductInfo=async(e)=>{
+// Fetching Product Info
+  const getProductInfo = async (e) => {
     try {
       e.preventDefault();
       const myInit = {
@@ -624,13 +633,56 @@ function Tables() {
         },
         body: JSON.stringify(inputs)
       }
-
-      const response = await fetch('https://uvm-server.herokuapp.com/api/producttransaction', myInit)
+      const response = await fetch('http://localhost:3001/api/producttransaction', myInit)
       if (!response.ok) {
         throw Error(response.statusText)
       }
       let data = await response.json()
-      setProducts(data.products)
+      setItems([...items, data])
+      console.log(data)
+
+      items.map((elem, index) => {
+        let totalInt = parseInt(elem.products.pprice)
+        console.log(totalInt)
+        setTotal(total + totalInt)
+      })
+      console.log(items)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  //Performing Transaction
+  const performTransaction = async (e) => {
+    try {
+      let first_char=firstbarcode.substr(0, 1)
+      let second_char=secondbarcode.substr(0, 1)
+
+      if(first_char==="#" && second_char==="=")
+      {
+        const myInit = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(transactionInfo)
+        }
+        const response = await fetch('http://localhost:3001/api/transaction', myInit)
+        if (!response.ok) {
+          throw Error(response.statusText)
+        }
+        let data = await response.json()
+        if(data.response==="Purchase Successfull")
+        {
+          window.alert("Purchase Successfull")
+        }
+      }else if(data.response==="User Doesnot Exist") {
+      window.alert("User Doesnot Exist")
+      }else{
+        window.alert("Invalid User Barcode")
+      }
+
+      
     } catch (error) {
       console.log(error)
     }
@@ -640,62 +692,79 @@ function Tables() {
     <>
       <div className="tabled">
         <Row gutter={[24, 0]}>
-          <Col xs={24} md={24}>           
-          <Row gutter={[24, 0]}>              
-          <Col xs={24} className="mb-24">
-            <Card className="header-solid h-full ant-card-p-0" title={<>
-              <Row gutter={[24, 0]} className="ant-row-flex ant-row-flex-middle">
-                <Col xs={24} md={12}>                         
-                <h6 className="font-semibold m-0">BARCODE SCAN</h6>
-                </Col>                       
-                <Col xs={24} md={12} className="d-flex">
-                  <Button type="primary" onClick={getProductInfo}>SUBMIT</Button>                       
-                </Col>                     
-              </Row>                   </>}>                 
-                  <div class="form-group">                   
-                  {/* <label class=" control-label" for="product_description">PRODUCT DESCRIPTION</label> */}
-                <input type="text" class="form-control" id="product_description" name="product_description" onChange={(e)=>{setBarcode(e.target.value)}}></input></div></Card></Col></Row>
-                <Col xs="24" xl={24}>
-            <Card
-              bordered={false}
-              className="criclebox tablespace mb-24"
-              title="Product Table"
-              extra={
-                <>
-                  <div onChange={onChange} defaultValue="a" class="btn-group" role="group" aria-label="Basic example">
-                    <button type="button" value="a" class="btn leftbutton btn-secondary">Pay</button>
-                    <button type="button" value="b" class="btn middlebutton btn-secondary">Clear</button>
+          <Col xs={24} md={24}>
+            <Row gutter={[24, 0]}>
+              <Col xs={24} className="mb-24">
+                <Card className="header-solid h-full ant-card-p-0" title={<>
+                  <Row gutter={[24, 0]} className="ant-row-flex ant-row-flex-middle">
+                    <Col xs={24} md={12}>
+                      <h6 className="font-semibold m-0">PRODUCT BARCODE</h6>
+                    </Col>
+                    <Col xs={24} md={12} className="d-flex">
+                      <Button type="primary" onClick={getProductInfo}>SUBMIT</Button>
+                    </Col>
+                  </Row>                   </>}>
+                  <div class="form-group">
+                    {/* <label class=" control-label" for="product_description">PRODUCT DESCRIPTION</label> */}
+                    <input type="text" class="form-control" id="product_description" placeholder="Product Barcode" name="product_description" onChange={(e) => { setBarcode(e.target.value) }}></input></div></Card></Col></Row>
+            <Row gutter={[24, 0]}>
+              <Col xs={24} className="mb-24">
+                <Card className="header-solid h-full ant-card-p-0" title={<>
+                  <Row gutter={[24, 0]} className="ant-row-flex ant-row-flex-middle">
+                    <Col xs={24} md={12}>
+                      <h6 className="font-semibold m-0">USER BARCODE</h6>
+                    </Col>
+                    <Col xs={24} md={12} className="d-flex">
+                      <Button type="primary" onClick={performTransaction}>SUBMIT</Button>
+                    </Col>
+                  </Row>                   </>}>
+                  <div class="form-group">
+                    {/* <label class=" control-label" for="product_description">PRODUCT DESCRIPTION</label> */}
+                    <input type="text" class="form-control" id="product_description" placeholder="First Barcode" name="product_description" onChange={(e) => { setFirstBarcode(e.target.value) }}></input>
+                    <input type="text" class="form-control" id="product_description" name="product_description" placeholder="Second Barcode" onChange={(e) => { setSecondBarcode(e.target.value) }}></input>
                   </div>
+                    </Card></Col></Row>
+                    
+            <Col xs="24" xl={24}>
+              <Card
+                bordered={false}
+                className="criclebox tablespace mb-24"
+                title="Product Table"
+                extra={
+                  <>
+                    <div onChange={onChange} defaultValue="a" class="btn-group" role="group" aria-label="Basic example">
+                      <button type="button" value="a" class="btn leftbutton btn-secondary">Pay</button>
+                      <button type="button" value="b" class="btn middlebutton btn-secondary">Clear</button>
+                    </div>
+                  </>
+                }
+              >
+                <div className="table-responsive">
+                  <table className="table align-middle mb-0 bg-white">
+                    <thead className="bg-light">
+                      <tr>
+                        <th>Barcode</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Unit Price</th>
+                        <th>Quantity</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {
+                        items.map((elem, index) => {
+                          return (<tr><td>{elem.products.pbarcode}</td><td>{elem.products.pname}</td><td>{elem.products.pcategory}</td><td>{elem.products.pprice}</td><td>{elem.products.pquantity}</td></tr>)
+                        })
+                      }
+                      <tr><td></td><td></td><td></td><td></td><td>Total={total}</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
 
-                </>
-              }
-            >
-              <div className="table-responsive">
-              <table className="table align-middle mb-0 bg-white">
-                <thead className="bg-light">
-                  <tr>
-                    <th>Barcode</th>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Unit Price</th>
-                    <th>Quantity</th>
-                  </tr>
-                </thead>
-                <tbody>
-                {/* {
-                    products.map((product) => {
-                       return (<tr><td>{product.pbarcode}</td><td>{product.pname}</td><td>{product.pcategory}</td><td>{product.pprice}</td><td>{product.pquantity}</td></tr>)
-                     })
-
-                   } */}
-                </tbody>
-              </table>
-              </div>
-            </Card>
-
+            </Col>
           </Col>
-          </Col>
-          
+
         </Row>
       </div>
     </>

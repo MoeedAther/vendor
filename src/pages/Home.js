@@ -11,6 +11,7 @@
 */
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
 import {
   Card,
@@ -49,11 +50,43 @@ import card from "../assets/images/info-card-1.jpg";
 
 function Home() {
   const { Title, Text } = Typography;
-    const accountbalance = useSelector((state) => state.userdata.accountbalance)
-
+  const vender_email = useSelector((state) => state.userdata.email)
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
-
   const [reverse, setReverse] = useState(false);
+  const [venderbalance, setVenderBalance] = useState("0");
+
+  const venderemailobj = {
+    vender_email: vender_email
+  }
+
+  useEffect(() => { // useEffect lifecycle method runs after final render is completed in DOM
+    async function getVenderInfo() {
+      try {
+        const myInit = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(venderemailobj)
+        }
+        const response = await fetch('http://localhost:3001/api/venderinfo', myInit)
+        if (!response.ok) {
+          throw Error(response.statusText)
+        }
+        const data = await response.json()
+
+        //Balance "K" formitter
+        function kFormatter(num) {
+          return Math.abs(num) > 999 ? Math.sign(num) * ((Math.abs(num) / 1000).toFixed(1)) + 'k' : Math.sign(num) * Math.abs(num)
+        }
+
+        setVenderBalance(kFormatter(data.balance))
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    getVenderInfo()
+  }, [])
 
   const dollor = [
     <svg
@@ -165,7 +198,7 @@ function Home() {
     },
     {
       today: "Balance",
-      title: "$23.2K",
+      title: "$" + venderbalance,
       persent: "",
       icon: <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABBElEQVRIie2TvW0CQRCFZyxEAwQ2EiI3uBFwDBWQ0AUhfdCHqYLQCXcX0APW52RWWq3273QgJ37SSnvz5uZv34j8oxbAGmgYjgZYubjqJWhEZPagehtVnYcdADA0chjnZWjAEka5SmJ2VdUY7+wh/q6DVEW1vMMzOviOWsPX94WdigR8Am2o/Ucm8BfzGvPxFw2R/Gz77omq6tNVlEyQGNGHd19qgJDPJkhgIyI/drY1fN83uIjIzT6nqvpezVcoZmkuezsAi1o+lJyPnfEH4A68Aa92P3j/Z3kBVsA1kmDi2gfOnv+XjURq+CKALpK8LfF9VHQq2Ep8HsAYOFqlnd3HJf4XS1zlT6Tg48EAAAAASUVORK5CYII=" />,
       bnb: "bnb2",

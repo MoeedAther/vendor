@@ -64,3 +64,13 @@
       position: initial  !important;
     }
   }
+.form-control{
+    margin: 0px 10px;
+}
+.form-group{
+    display:flex;
+}
+.deposit{
+    display:flex;
+    justify-content:end;
+}
