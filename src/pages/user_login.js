@@ -60,8 +60,7 @@ function UserLogin() {
         body: JSON.stringify(inputs)
       }
       console.log(inputs)
-      // const response = await fetch('https://uvm-server.herokuapp.com/api/auth/vender', myInit)
-      const response = await fetch('http://localhost:3001/api/auth/vender', myInit)
+      const response = await fetch('https://blush-bighorn-sheep-kit.cyclic.app/api/auth/vender', myInit)
       if (!response.ok) {
         throw Error(response.statusText)
       }

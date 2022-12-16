@@ -633,7 +633,7 @@ function Tables() {
         },
         body: JSON.stringify(inputs)
       }
-      const response = await fetch('http://localhost:3001/api/producttransaction', myInit)
+      const response = await fetch('https://blush-bighorn-sheep-kit.cyclic.app/api/producttransaction', myInit)
       if (!response.ok) {
         throw Error(response.statusText)
       }
@@ -667,7 +667,7 @@ function Tables() {
           },
           body: JSON.stringify(transactionInfo)
         }
-        const response = await fetch('http://localhost:3001/api/transaction', myInit)
+        const response = await fetch('https://blush-bighorn-sheep-kit.cyclic.app/api/transaction', myInit)
         if (!response.ok) {
           throw Error(response.statusText)
         }

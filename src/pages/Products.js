@@ -601,7 +601,7 @@ function Tables() {
   useEffect(()=>{ // useEffect lifecycle method runs after final render is completed in DOM
     async function getAllProducts(){
       try {
-        const response = await axios.get("http://localhost:3001/api/products")
+        const response = await axios.get("https://blush-bighorn-sheep-kit.cyclic.app/api/products")
         console.log(response)
         setProducts(response.data.products) // Withdraws objects from responce array and stores them in users state
         console.log()

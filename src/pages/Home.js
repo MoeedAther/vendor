@@ -69,7 +69,7 @@ function Home() {
           },
           body: JSON.stringify(venderemailobj)
         }
-        const response = await fetch('http://localhost:3001/api/venderinfo', myInit)
+        const response = await fetch('https://blush-bighorn-sheep-kit.cyclic.app/api/venderinfo', myInit)
         if (!response.ok) {
           throw Error(response.statusText)
         }

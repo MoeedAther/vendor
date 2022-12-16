@@ -36,8 +36,7 @@ function Addproduct() {
                 body: JSON.stringify(inputs)
               }
         
-            //   const response = await fetch('https://uvm-server.herokuapp.com/api/addproducts', myInit)
-              const response = await fetch('http://localhost:3001/api/addproducts', myInit)
+              const response = await fetch('https://blush-bighorn-sheep-kit.cyclic.app/api/addproducts', myInit)
               if (!response.ok) {
                 throw Error(response.statusText)
               }
